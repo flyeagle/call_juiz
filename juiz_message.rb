@@ -17,6 +17,8 @@ class Juizmessage
 
         @screen_name = ''
         @text = ''
+        @lang = 'ja'
+        @time_zone = 'Tokyo'
         @message = ''
         @money = 0
     end
@@ -50,11 +52,29 @@ class Juizmessage
     def receive
         accept = @normal['accept'].choice()
         oblige = @normal['oblige'].choice().strip
+        if @lang == 'us' then
+            accept = 'Understood.'
+            oblige = ' '
+        elsif @lang == 'cn' then
+            accept = '已受理，'
+            oblige = 'noblesse oblige，'
+        elsif @lang == 'ko' then
+            accept = ''
+            oblige = 'Noblesse Oblige. '
+        end
         return accept+oblige
     end
 
     def messia
-        return @normal['messia'].choice()
+        messia = @normal['messia'].choice()
+        if @lang == 'us' then
+            messia = 'I pray for your continuing service as a savior.'
+        elsif @lang == 'cn' then
+            messia = '請繼續履行救世主的義務'
+        elsif @lang == 'ko' then
+            messia = '앞으로도 당신이 구세주로써 변함이 없기를..'
+        end
+        return messia
     end
 
     def generate(showtext, showmoney, message)
@@ -63,13 +83,31 @@ class Juizmessage
             twit += '@'+@screen_name+' '
         end
         if showtext then
-            twit += '「'+@text+'」'
+            if @lang != 'ja' then
+                twit += '"'+@text+'"'
+            else
+                twit += '「'+@text+'」'
+            end
         end
         if message != nil then
             twit += message+' '
         end
         if showmoney then
-            twit += '[金額: '+money_format(@money)+'円]'
+            if @lang == 'us' then
+                twit += '[Price:$'+money_format(@money/85)+']'
+            elsif @lang == 'cn' then
+                if @time_zone == 'Hong Kong' then
+                    twit += '[金額:HK$'+money_format(@money/12)+']'
+                elsif @time_zone == 'Taipei' then
+                    twit += '[金額:NT$'+money_format(@money/3)+']'
+                else
+                    twit += '[金額:'+money_format(@money/14)+'元]'
+                end
+            elsif @lang == 'ko' then
+                twit += '[금액:'+money_format(@money*13)+'₩]'
+            else
+                twit += '[金額:'+money_format(@money)+'円]'
+            end
         end
         return twit
     end
@@ -77,20 +115,26 @@ class Juizmessage
         return (num.to_s =~ /[-+]?\d{4,}/) ? (num.to_s.reverse.gsub(/\G((?:\d+\.)?\d{3})(?=\d)/, '\1,').reverse) : num.to_s
     end
 
-    def setinfo(screen_name, text = nil, money = nil)
+    def setinfo(screen_name, text = nil)
         if screen_name != '' then
             @screen_name = screen_name
         end
         if text != nil then
             @text = text
         end
-        if money != nil then
-            @money = money
-        end
+    end
+    def setlang(lang, time_zone)
+        @lang = lang
+        @time_zone = time_zone
     end
     def setmessage(message)
         if message != nil then
             @message = message
+        end
+    end
+    def setmoney(money)
+        if money != nil then
+            @money = money
         end
     end
 end

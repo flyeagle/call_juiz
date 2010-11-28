@@ -1,3 +1,4 @@
+require 'rtranslate'
 require 'yahooapis.rb'
 require 'juiz_message.rb'
 require 'kconv'
@@ -15,8 +16,11 @@ class Juizdialog
         @status = status
         @screen_name = status['user']['screen_name']
         @text = cleanup(status['text'])
+        @time_zone = status['user']['time_zone']
+        @orig_text = ''
 
         # 途中生成物
+        @lang = 'ja'
         @words = []
         @money = 0
         @url = ''
@@ -36,15 +40,18 @@ class Juizdialog
     end
 
     def dialog
+        @jms.setinfo(@screen_name, @text)
+        examlang()
+        @jms.setlang(@lang, @time_zone)
+
         examprice()
+        @jms.setmoney(@money)
 puts @words
 puts @money
         gendialog()
     end
 
     def gendialog
-        @jms.setinfo(@screen_name, @text, @money)
-
         if @words.length < 1 then
             @showtext = false
             @showmoney = false
@@ -65,6 +72,22 @@ puts @money
             @juiz_suffix = @jms.receive+@jms.messia
         end
         @twit = @jms.generate(@showtext, @showmoney, @juiz_suffix)
+    end
+
+    def examlang
+        if @text.match(/^[0-9a-zA-Z !"#\$%&'()*+-.\/:;<=>?@\[\\\]^_`{\|}~]+$/) && !@text.match(/merry.*mas/i) then
+            @lang = 'us'
+            @orig_text = @text
+            @text = Translate.t(@text, Language::ENGLISH, Language::JAPANESE)
+        elsif (@time_zone == 'Beijing' || @time_zone == 'Hong Kong' || @time_zone == 'Chongqing' || @time_zone == 'Taipei') && !@text.match(/[ぁ-ん]/) then
+            @lang = 'cn'
+            @orig_text = @text
+            @text = Translate.t(@text, Language::CHINESE, Language::JAPANESE)
+        elsif @time_zone == 'Seoul' && !@text.match(/[ぁ-ん]/) then
+            @lang = 'ko'
+            @orig_text = @text
+            @text = Translate.t(@text, Language::KOREAN, Language::JAPANESE)
+        end
     end
 
     def examprice
