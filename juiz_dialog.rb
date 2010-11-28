@@ -20,6 +20,8 @@ class Juizdialog
         @words = []
         @money = 0
         @url = ''
+        @showtext = true
+        @showmoney = true
 
         # 最終生成物
         @juiz_suffix = ''
@@ -41,11 +43,28 @@ puts @money
     end
 
     def gendialog
-        @juiz_suffix = @jms.receive+@jms.messia
-        @twit = '@'+@screen_name
-        @twit += '「'+@status['text']+'」'
-        @twit += @juiz_suffix
-        @twit += '[金額:'+money_format(@money)+'円]'
+        @jms.setinfo(@screen_name, @text, @money)
+
+        if @words.length < 1 then
+            @showtext = false
+            @showmoney = false
+            @juiz_suffix = @jms.noword(@text)
+        elsif @money > 1000000000000 then
+            @juiz_suffix = @jms.overmoney
+        elsif @money > 10000000 then
+            if @juiz_suffix == '' then
+                @juiz_suffix = @jms.overmillion
+            end
+        elsif @money == 0 then
+            @showtext = false
+            @showmoney = false
+            @juiz_suffix = @jms.zeromoney
+        elsif @words.length == 1 && @url != '' && (wantto = @jms.wantto(@text)) != '' then
+            @juiz_suffix = wantto+' '+@url
+        else
+            @juiz_suffix = @jms.receive+@jms.messia
+        end
+        @twit = @jms.generate(@showtext, @showmoney, @juiz_suffix)
     end
 
     def examprice
@@ -64,6 +83,7 @@ puts ext
                 next
             end
             pricebox = get_kakaku(word)
+puts pricebox
             price = pricebox['price']
             if price != nil && price > 0 then
                 @url = pricebox['url']
@@ -153,9 +173,5 @@ puts ext
             text = text.sub(uri, '')
         }
         return text
-    end
-
-    def money_format(num)
-        return (num.to_s =~ /[-+]?\d{4,}/) ? (num.to_s.reverse.gsub(/\G((?:\d+\.)?\d{3})(?=\d)/, '\1,').reverse) : num.to_s
     end
 end
