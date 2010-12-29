@@ -14,6 +14,7 @@ class Juizmessage
     def initialize
         path = '/home/flyeagle/call_juiz/'
         @normal = YAML::load_file(path+'juiz_normal.yaml') 
+        @character = YAML::load_file(path+'juiz_character.yaml') 
 
         @screen_name = ''
         @text = ''
@@ -23,6 +24,41 @@ class Juizmessage
         @money = 0
     end
 
+    ## Character Message
+    def tachikomabot
+        tachikoma = @character['tachikoma']
+        return tachikoma.choice()
+    end
+
+    def no2(text)
+        if text.match(/聞きたい？/) then
+            return '是非聞きたいわ！'
+        elsif text.match(/分かる.*ジュイス/) then
+            return 'ええ、分かるわ、2G。'
+        else
+            no2 = @character['no2']
+            return no2.choice()
+        end
+    end
+
+    def no7(text)
+        if text.match(/片棒/) then
+            return 'いえ、いいんです。あなたのお役に立てるのなら……'
+        elsif text.match(/え？/) then
+            return 'すみません……忘れてください。'
+        elsif text.match(/告白/) then
+            return 'ほ、本当ですか！'
+        else
+            no7 = @character['no7']
+            return no7.choice()
+        end
+    end
+
+    def no10
+        return '結城さま、申し訳ございません。受理できません……'
+    end
+
+    ## Normal Message
     def noword(text)
         nw = @normal['noword']
         if text.match(/[\?？]$/) then
@@ -84,7 +120,7 @@ class Juizmessage
         end
         if showtext then
             if @lang != 'ja' then
-                twit += '"'+@text+'"'
+                twit += '"'+@text+'" '
             else
                 twit += '「'+@text+'」'
             end
