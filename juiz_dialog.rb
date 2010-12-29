@@ -167,8 +167,7 @@ puts pricebox
         # 最初にジュイスが出てくるか、文章になるまで回す
         ptext = ''
         while ptext != text
-            #if text.match(/^(\.@|@|＠)(call_juiz|ジュイス)/) then
-            if text.match(/^(\.@|@|＠)(flyeagle_echo|ジュイス)/) then
+            if text.match(/^(\.@|@|＠)(flyeagle_echo|call_juiz|ジュイス)/) then
                 break
             end
             ptext = text
@@ -177,12 +176,10 @@ puts pricebox
             text = text.sub(/^[\s　\.]+/, '')
         end
         # もしジュイス宛ではなかったらfalse
-        #if !text.match(/^(\.@|@|＠)(call_juiz|ジュイス)( |　|、|,|)/) then
-        if !text.match(/^(\.@|@|＠)(flyeagle_echo|ジュイス)( |　|、|,|)/) then
+        if !text.match(/^(\.@|@|＠)(flyeagle_echo|call_juiz|ジュイス)( |　|、|,|)/) then
             return nil
         end
-        #text = text.sub(/^(\.@|@|＠)(call_juiz|ジュイス)( |　|、|,|)/, '')
-        text = text.sub(/^(\.@|@|＠)(flyeagle_echo|ジュイス)( |　|、|,|)/, '')
+        text = text.sub(/^(\.@|@|＠)(flyeagle_echo|call_juiz|ジュイス)( |　|、|,|)/, '')
         text = text.sub(/^[\s　]+/, '')
         text = text.sub(/[\s　]+$/, '')
         # フッタ処理
