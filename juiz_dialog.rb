@@ -52,7 +52,26 @@ puts @money
     end
 
     def gendialog
-        if @words.length < 1 then
+        ## Character Message
+        if @screen_name == 'tachikomabot' then
+            @showtext = false
+            @showmoney = false
+            @juiz_suffix = @jms.tachikomabot
+        elsif @screen_name == '2G_bot' then
+            @showtext = false
+            @showmoney = false
+            @juiz_suffix = @jms.no2(@text)
+        elsif @screen_name == 'no_7_kaoru_bot' then
+            @showtext = false
+            @showmoney = false
+            @juiz_suffix = @jms.no7(@text)
+        elsif @screen_name == 'SELECAO_10' then
+            @showtext = false
+            @showmoney = false
+            @juiz_suffix = @jms.no10
+
+        ## Normal Message
+        elsif @words.length < 1 then
             @showtext = false
             @showmoney = false
             @juiz_suffix = @jms.noword(@text)
