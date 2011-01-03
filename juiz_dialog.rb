@@ -16,6 +16,7 @@ class Juizdialog
         @status = status
         @screen_name = status['user']['screen_name']
         @text = cleanup(status['text'])
+        @text_length = @text.split(//u).length
         @time_zone = status['user']['time_zone']
         @orig_text = ''
 
@@ -51,6 +52,51 @@ class Juizdialog
     end
 
     def gendialog
+        ## Special Message
+        # TODO: 既に100億使い切っている人
+        if @text.match(/(今日|本日|きょう)の最高金額/) then
+            # TODO
+        elsif @text.match(/(今日|本日|きょう)の最低金額/) then
+            # TODO
+        elsif @text.match(/残(金|額|高|りの金額).*(いくら|教えて|わかる)/) then
+            # TODO
+        elsif @text.match(/(と|って|て)(言って|諭して)/) then
+            # TODO
+
+        ## Seasonal Message
+        elsif @text.match(/(あけ|明け)(おめ|オメ|御目)/) || @text.match(/(こと|コト)(よろ|ヨロ)/) || @text.match(/(今年|ことし).*(よろし|宜しく|ヨロシク|夜露)/) || @text.match(/(あけま|明けま).*(おめで|オメデ|お目出|御目出)/) || @text.match(/(昨年|去年).*(ありがと|有難|アリガト|お世話|世話)/) then
+            if @text_length < 20 then
+                @showmoney = false
+            end
+            @juiz_suffix = @jms.newyear
+        elsif @text.match(/#tanzaku/)  || @text.match(/よ(う|ー)に(|。)$/) || @text.match(/短冊/) then
+            @juiz_suffix = @jms.tanzaku
+
+        ## Normal Message
+        elsif @words.length < 1 then
+            @showtext = false
+            @showmoney = false
+            @juiz_suffix = @jms.noword(@text)
+        elsif @text_length > 65 && !(@text.match(/この国には.*役回り/) || @text.match(/だって.*信じてくれた/)) then
+            @showtext = false
+            @showmoney = false
+            @juiz_suffix = @jms.longtext
+        elsif @money > 1000000000000 then
+            @juiz_suffix = @jms.overmoney
+        elsif @money > 10000000 then
+            if @juiz_suffix == '' then
+                @juiz_suffix = @jms.overmillion
+            end
+        elsif @money == 0 then
+            @showtext = false
+            @showmoney = false
+            @juiz_suffix = @jms.zeromoney
+        elsif @words.length == 1 && @url != '' && (wantto = @jms.wantto(@text)) != '' then
+            @juiz_suffix = wantto+' '+@url
+        else
+            @juiz_suffix = @jms.receive+@jms.messia
+        end
+
         ## Character Message
         if @screen_name == 'tachikomabot' then
             @showtext = false
@@ -68,27 +114,8 @@ class Juizdialog
             @showtext = false
             @showmoney = false
             @juiz_suffix = @jms.no10
-
-        ## Normal Message
-        elsif @words.length < 1 then
-            @showtext = false
-            @showmoney = false
-            @juiz_suffix = @jms.noword(@text)
-        elsif @money > 1000000000000 then
-            @juiz_suffix = @jms.overmoney
-        elsif @money > 10000000 then
-            if @juiz_suffix == '' then
-                @juiz_suffix = @jms.overmillion
-            end
-        elsif @money == 0 then
-            @showtext = false
-            @showmoney = false
-            @juiz_suffix = @jms.zeromoney
-        elsif @words.length == 1 && @url != '' && (wantto = @jms.wantto(@text)) != '' then
-            @juiz_suffix = wantto+' '+@url
-        else
-            @juiz_suffix = @jms.receive+@jms.messia
         end
+
         @twit = @jms.generate(@showtext, @showmoney, @juiz_suffix)
     end
 
