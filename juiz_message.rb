@@ -15,6 +15,7 @@ class Juizmessage
         path = '/home/flyeagle/call_juiz/'
         @normal = YAML::load_file(path+'juiz_normal.yaml') 
         @season = YAML::load_file(path+'juiz_season.yaml') 
+        @textmes = YAML::load_file(path+'juiz_textmes.yaml') 
         @character = YAML::load_file(path+'juiz_character.yaml') 
 
         @screen_name = ''
@@ -25,44 +26,23 @@ class Juizmessage
         @money = 0
     end
 
-    ## Character Message
-    def tachikomabot
-        tachikoma = @character['tachikoma']
-        return tachikoma.choice()
-    end
-    def no2(text)
-        if text.match(/聞きたい？/) then
-            return '是非聞きたいわ！'
-        elsif text.match(/分かる.*ジュイス/) then
-            return 'ええ、分かるわ、2G。'
-        else
-            no2 = @character['no2']
-            return no2.choice()
-        end
-    end
-    def no7(text)
-        if text.match(/片棒/) then
-            return 'いえ、いいんです。あなたのお役に立てるのなら……'
-        elsif text.match(/え？/) then
-            return 'すみません……忘れてください。'
-        elsif text.match(/告白/) then
-            return 'ほ、本当ですか！'
-        else
-            no7 = @character['no7']
-            return no7.choice()
-        end
-    end
-    def no10
-        no10 = @character['no10']
-        return no10.choice()
-    end
-
     ## Seasonal Message
     def newyear
         return @season['newyear'].choice()
     end
     def tanzaku
         return @season['tanzaku'].choice()
+    end
+
+    ## Text Message
+    def text_extu
+        return @textmes['text_extu'].choice()
+    end
+    def text_thankyou
+        return @textmes['text_thankyou'].choice()
+    end
+    def text_congrats
+        return @textmes['text_congrats'].choice()
     end
 
     ## Normal Message
@@ -120,6 +100,38 @@ class Juizmessage
             messia = '앞으로도 당신이 구세주로써 변함이 없기를..'
         end
         return messia
+    end
+
+    ## Character Message
+    def tachikomabot
+        tachikoma = @character['tachikoma']
+        return tachikoma.choice()
+    end
+    def no2(text)
+        if text.match(/聞きたい？/) then
+            return '是非聞きたいわ！'
+        elsif text.match(/分かる.*ジュイス/) then
+            return 'ええ、分かるわ、2G。'
+        else
+            no2 = @character['no2']
+            return no2.choice()
+        end
+    end
+    def no7(text)
+        if text.match(/片棒/) then
+            return 'いえ、いいんです。あなたのお役に立てるのなら……'
+        elsif text.match(/え？/) then
+            return 'すみません……忘れてください。'
+        elsif text.match(/告白/) then
+            return 'ほ、本当ですか！'
+        else
+            no7 = @character['no7']
+            return no7.choice()
+        end
+    end
+    def no10
+        no10 = @character['no10']
+        return no10.choice()
     end
 
     def generate(showtext, showmoney, message)
