@@ -46,7 +46,6 @@ class Juizdialog
         @jms.setlang(@lang, @time_zone)
 
         examprice()
-        @jms.setmoney(@money)
 
         gendialog()
     end
@@ -63,6 +62,21 @@ class Juizdialog
         elsif @text.match(/(と|って|て)(言って|諭して)/) then
             # TODO
 
+        ## Gourmet Message
+        elsif (@text.match(/((なに|何)か).*(のみ|飲み)(もの|物).*(を|のみたい|飲みたい|ほしい|欲しい|ちょうだい|頂戴|お願い|おねがい)/) || @text.match(/(喉|のど).*(渇|乾|かわ)いた/)) then
+            drink = @jms.gourmet_drink
+            if @text.match(/(冷|つめ)たい/) then
+                drink = @jms.gourmet_drink_cold
+            elsif @text.match(/(あったか|あたた|温|暖)/) then
+                drink = @jms.gourmet_drink_hot
+            end
+            @juiz_suffix = drink['message']
+            @money = drink['money']
+        elsif (@text.match(/((なに|何)か).*(たべ|食べ|食べる)(もの|物).*(を|たべたい|食べたい|ほしい|欲しい|ちょうだい|頂戴|お願い|おねがい)/) || @text.match(/(おなか|お腹|はら|腹).*(すいた|へった|減った)/)) then
+            food = @jms.gourmet_food
+            @juiz_suffix = food['message']
+            @money = food['money']
+
         ## Seasonal Message
         elsif @text.match(/(あけ|明け)(おめ|オメ|御目)/) || @text.match(/(こと|コト)(よろ|ヨロ)/) || @text.match(/(今年|ことし).*(よろし|宜しく|ヨロシク|夜露)/) || @text.match(/(あけま|明けま).*(おめで|オメデ|お目出|御目出)/) || @text.match(/(昨年|去年).*(ありがと|有難|アリガト|お世話|世話)/) then
             if @text_length < 20 then
@@ -78,7 +92,7 @@ class Juizdialog
             @juiz_suffix = @jms.text_extu
         elsif @text.match(/(だれ|誰)？(きみ|君)/) then
             @showmoney = false
-            @juiz_suffix = 'あなたのコンセルジュです。'+messia_dialog()
+            @juiz_suffix = 'あなたのコンシェルジュです。'+@jms.messia
         elsif @text.match(/誰(|.|..)？/) || @text.match(/誰だか知ってるの？/) then
             @showmoney = false
             @juiz_suffix = '誰か？誰かということはわかりかねますが。'
@@ -119,6 +133,53 @@ class Juizdialog
                 @showmoney = false
             end
             @juiz_suffix = @jms.text_congrats
+        elsif @text.match(/残念(|.|..|...|....)$/) && @text_length < 10 then
+            @showtext = false
+            @showmoney = false
+            @juiz_suffix = 'ご要望に沿えず、申し訳ございません…。'
+        elsif @text.match(/(面白|おもしろ)かった(よ|！)/) then
+            @showtext = false
+            @showmoney = false
+            @juiz_suffix = '楽しんでいただけてなによりです。Noblesse Oblige。'+@jms.messia
+        elsif @text.match(/おはよ(う|ー)/) || @text.match(/おっはー/) || @text.match(/グッ.*モーニン/) then
+            if @text_length < 18 then
+                @showtext = false
+                @showmoney = false
+            end
+            @juiz_suffix = @jms.text_morning
+        elsif @text.match(/おやすみ/) then
+            if @text_length < 18 then
+                @showtext = false
+                @showmoney = false
+            end
+            @juiz_suffix = @jms.text_sleep
+        elsif @text.match(/こんばん(は|わ)/) then
+            if @text_length < 18 then
+                @showtext = false
+                @showmoney = false
+            end
+            @juiz_suffix = 'こんばんは。'+@jms.messia
+        elsif @text.match(/こんにち(は|わ)/) || @text.match(/ご(きげん|機嫌)よう/) then
+            if @text_length < 18 then
+                @showtext = false
+                @showmoney = false
+            end
+            @juiz_suffix = 'はい、ジュイスです。'+@jms.messia
+        elsif @text.match(/ただいま/) then
+            @showtext = false
+            @showmoney = false
+            @juiz_suffix = 'お帰りになられたのですね。何かご要望はございますか？'
+        elsif @text.match(/(行|い)って(き|来)ま/) then
+            @showtext = false
+            @showmoney = false
+            @juiz_suffix = 'はい、お気をつけて。行ってらっしゃい！'
+        elsif @text.match(/す(い|み)ません/) || @text.match(/(ゴメン|ごめん)(ネ|ね|なさい)/) then
+            @juiz_suffix = @jms.text_sorry
+            @money = Kernel.rand(10000)+10
+        elsif @text.match(/お(つか|疲)れ(さん|さま|様|$)/) && @text_length < 13 then
+            @showtext = false
+            @showmoney = false
+            @juiz_suffix = 'お気遣いありがとうございます。'+@jms.messia
 
         ## Normal Message
         elsif @words.length < 1 then
@@ -164,6 +225,7 @@ class Juizdialog
             @juiz_suffix = @jms.no10
         end
 
+        @jms.setmoney(@money)
         @twit = @jms.generate(@showtext, @showmoney, @juiz_suffix)
     end
 
