@@ -46,8 +46,7 @@ class Juizdialog
 
         examprice()
         @jms.setmoney(@money)
-puts @words
-puts @money
+
         gendialog()
     end
 
@@ -112,7 +111,6 @@ puts @money
     def examprice
         # ジュイスを抜く
         ext = @text.sub(/^(juiz|ジュイス|じゅいす)(\s|　|、|,|)/i, '')
-puts ext
         # 単語を抜き出す
         keywords = @ydn.keyphrase(ext)
         # 前から選ぶ
