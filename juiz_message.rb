@@ -16,6 +16,7 @@ class Juizmessage
         @normal = YAML::load_file(path+'juiz_normal.yaml') 
         @season = YAML::load_file(path+'juiz_season.yaml') 
         @textmes = YAML::load_file(path+'juiz_textmes.yaml') 
+        @gourmet = YAML::load_file(path+'juiz_gourmet.yaml') 
         @character = YAML::load_file(path+'juiz_character.yaml') 
 
         @screen_name = ''
@@ -24,6 +25,24 @@ class Juizmessage
         @time_zone = 'Tokyo'
         @message = ''
         @money = 0
+    end
+
+    ## Gourmet Message
+    def gourmet_drink_cold
+        drink = @gourmet['drink_cold'].choice().split('#')
+        return {'message' => drink[0], 'money' => drink[1].to_i}
+    end
+    def gourmet_drink_hot
+        drink = @gourmet['drink_hot'].choice().split('#')
+        return {'message' => drink[0], 'money' => drink[1].to_i}
+    end
+    def gourmet_drink
+        drink = (@gourmet['drink_cold']+@gourmet['drink_hot']).choice().split('#')
+        return {'message' => drink[0], 'money' => drink[1].to_i}
+    end
+    def gourmet_food
+        food = @gourmet['food'].choice().split('#')
+        return {'message' => food[0], 'money' => food[1].to_i}
     end
 
     ## Seasonal Message
@@ -43,6 +62,15 @@ class Juizmessage
     end
     def text_congrats
         return @textmes['text_congrats'].choice()
+    end
+    def text_morning
+        return @textmes['text_morning'].choice()
+    end
+    def text_sleep
+        return @textmes['text_sleep'].choice()
+    end
+    def text_sorry
+        return @textmes['text_sorry'].choice()
     end
 
     ## Normal Message
