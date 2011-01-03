@@ -53,13 +53,13 @@ class Juizdialog
 
     def gendialog
         ## Special Message
-        # TODO: 既に100億使い切っている人
+        # TODO: 既に100億使い切っている人 after summation
         if @text.match(/(今日|本日|きょう)の最高金額/) then
-            # TODO
+            # TODO after db
         elsif @text.match(/(今日|本日|きょう)の最低金額/) then
-            # TODO
+            # TODO after db
         elsif @text.match(/残(金|額|高|りの金額).*(いくら|教えて|わかる)/) then
-            # TODO
+            # TODO after db
         elsif @text.match(/(と|って|て)(言って|諭して)/) then
             # TODO
 
@@ -71,6 +71,54 @@ class Juizdialog
             @juiz_suffix = @jms.newyear
         elsif @text.match(/#tanzaku/)  || @text.match(/よ(う|ー)に(|。)$/) || @text.match(/短冊/) then
             @juiz_suffix = @jms.tanzaku
+
+        ## Text Message
+        elsif @text.match(/えっ(|？)$/) then
+            @showmoney = false
+            @juiz_suffix = @jms.text_extu
+        elsif @text.match(/(だれ|誰)？(きみ|君)/) then
+            @showmoney = false
+            @juiz_suffix = 'あなたのコンセルジュです。'+messia_dialog()
+        elsif @text.match(/誰(|.|..)？/) || @text.match(/誰だか知ってるの？/) then
+            @showmoney = false
+            @juiz_suffix = '誰か？誰かということはわかりかねますが。'
+        elsif @text.match(/って知ってる？/) then
+            @showmoney = false
+            @juiz_suffix = 'いいえ。お調べいたしますか？'
+        elsif @text.match(/たの？/) then
+            @showmoney = false
+            @juiz_suffix = '申し訳ありません。その後については、把握しておりません。'
+        elsif @text.match(/ってこと？/) then
+            @showmoney = false
+            @juiz_suffix = 'はい。ありていに言えばそういうことです。'
+        elsif @text.match(/(1|１|一)番(いい|良い).*頼む/) then
+            @showmoney = false
+            @juiz_suffix = 'Mr.Outside は言っています。ここでセレソンを諦めるべきではないと――'
+        elsif @text.match(/(て|で)大丈夫か(\?|？|$)/) then
+            @showmoney = false
+            @juiz_suffix = '大丈夫です。きっと問題ありません。'
+        elsif @text.match(/ジョニーを/) then
+            if Kernel.rand(10) > 4 then
+                @showmoney = false
+                @juiz_suffix = 'ジョニー…をですか？'
+            else
+                @juiz_suffix = @jms.receive+@jms.messia
+            end
+        elsif @text.match(/もういいよ/) then
+            @showmoney = false
+            @juiz_suffix = '了解しました。Noblesse Oblige。'+@jms.messia
+        elsif @text.match(/ありがと/) || @text.match(/(すば|素晴)らしい！/) || @text.match(/サンキュ/) then
+            if @text_length < 18 then
+                @showtext = false
+                @showmoney = false
+            end
+            @juiz_suffix = @jms.text_thankyou
+        elsif @text.match(/おめでとう/) && !@text.match(/おめでとう(」|って|と)/) then
+            if @text_length < 18 then
+                @showtext = false
+                @showmoney = false
+            end
+            @juiz_suffix = @jms.text_congrats
 
         ## Normal Message
         elsif @words.length < 1 then
