@@ -14,6 +14,7 @@ class Juizmessage
     def initialize
         path = '/home/flyeagle/call_juiz/'
         @normal = YAML::load_file(path+'juiz_normal.yaml') 
+        @season = YAML::load_file(path+'juiz_season.yaml') 
         @character = YAML::load_file(path+'juiz_character.yaml') 
 
         @screen_name = ''
@@ -29,7 +30,6 @@ class Juizmessage
         tachikoma = @character['tachikoma']
         return tachikoma.choice()
     end
-
     def no2(text)
         if text.match(/聞きたい？/) then
             return '是非聞きたいわ！'
@@ -40,7 +40,6 @@ class Juizmessage
             return no2.choice()
         end
     end
-
     def no7(text)
         if text.match(/片棒/) then
             return 'いえ、いいんです。あなたのお役に立てるのなら……'
@@ -53,9 +52,17 @@ class Juizmessage
             return no7.choice()
         end
     end
-
     def no10
-        return '結城さま、申し訳ございません。受理できません……'
+        no10 = @character['no10']
+        return no10.choice()
+    end
+
+    ## Seasonal Message
+    def newyear
+        return @season['newyear'].choice()
+    end
+    def tanzaku
+        return @season['tanzaku'].choice()
     end
 
     ## Normal Message
@@ -66,7 +73,9 @@ class Juizmessage
         end
         return nw.choice()
     end
-
+    def longtext
+        return @normal['longtext'].choice()
+    end
     def overmoney
         return @normal['overmoney'].choice()
     end
