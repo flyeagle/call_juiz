@@ -44,7 +44,7 @@ class Yahooapis
             return ret
         end
 
-        api_url  = 'http://search.yahooapis.jp/WebSearchService/V1/webSearch?'
+        api_url  = 'http://search.yahooapis.jp/WebSearchService/V2/webSearch?'
         api_url += 'appid='+@appid
         api_url += '&query='+query
         if type == 'kakaku' then
@@ -52,7 +52,7 @@ class Yahooapis
         end
         api_url += '&start='+start
         api_url += '&results=20'
-        api_url += '&format=html'
+        api_url += '&format=xml'
         if type == 'chie' then
             api_url += '&site=detail.chiebukuro.yahoo.co.jp'
         else
