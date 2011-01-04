@@ -44,6 +44,10 @@ class Juizmessage
         food = @gourmet['food'].choice().split('#')
         return {'message' => food[0], 'money' => food[1].to_i}
     end
+    def gourmet_winter
+        item = @gourmet['item'].choice().split('#')
+        return {'message' => item[0], 'money' => item[1].to_i}
+    end
 
     ## Seasonal Message
     def newyear
@@ -71,6 +75,28 @@ class Juizmessage
     end
     def text_sorry
         return @textmes['text_sorry'].choice()
+    end
+    def merry_fail
+        return @textmes['merry_fail'].choice()
+    end
+    def merry_success
+        return @textmes['merry_success'].choice()
+    end
+    def feel_sleepy
+        h = Time.now.hour
+        if h > 6 && h < 12 then
+            return '昨晩あまりお休みになれなかったのですね。Noblesse Oblige。'+messia()
+        elsif h > 11 && h < 16 then
+            return '少しお昼寝を取られてはいかがでしょう？Noblesse Oblige。'+messia()
+        elsif h > 15 && h < 19 then
+            return '気分転換に散歩などいかがでしょう？Noblesse Oblige。'+messia()
+        elsif h > 18 && h < 22 then
+            return 'なにやらお疲れのようですね。Noblesse Oblige。早めにお休みになってください。'
+        elsif h > 2 && h < 7 then
+            return '今夜は徹夜ですか？Noblesse Oblige。無理なさらないで下さいね。'
+        else
+            return '無理せずにお休みになったほうがよろしいのでは。Noblesse Oblige。'+messia()
+        end
     end
 
     ## Normal Message
