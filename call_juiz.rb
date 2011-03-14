@@ -11,6 +11,10 @@ require 'juiz_dialog.rb'
 require 'kconv'
 $KCODE = 'utf-8'
 
+# 単にOAuth接続して、UserStreamを拾っているだけ
+# mention に当たるもの、および返信文言については
+# Juizdialog に任せている
+
 class CallJuiz
     # bot の screen_name
     SCREEN_NAME = 'call_juiz'
@@ -24,6 +28,7 @@ class CallJuiz
     def initialize
         path = '/home/flyeagle/call_juiz/'
         yaml = YAML::load_file(path+'accesskey.yaml')
+        accesskey = yaml['call_juiz']
         accesskey = yaml['flyeagle_echo']
 
         # Twitter Setting
@@ -61,13 +66,17 @@ class CallJuiz
                         if juiz_dialog.gettext == nil then
                             next
                         end
+
 # debug
 user = json['user']
 puts "#{user['screen_name']}: #{CGI.unescapeHTML(json['text'])}"
+
                         # 解析開始
                         juiz_dialog.dialog
+
 # debug
 puts juiz_dialog.gettwit
+
                     end
                 end
             #rescue Timeout::Error, StandardError # 接続エラー
