@@ -215,7 +215,7 @@ class Juizmessage
                     twit += '[金額:'+money_format(@money/14)+'元]'
                 end
             elsif @lang == 'ko' then
-                twit += '[금액:'+money_format(@money*13)+'₩]'
+                twit += '[금액:'+money_format(@money*13)+'원]'
             else
                 twit += '[金額:'+money_format(@money)+'円]'
             end

@@ -1,8 +1,45 @@
-require 'rtranslate'
+require 'rubygems'
+require 'easy_translate'
 require 'yahooapis.rb'
 require 'juiz_message.rb'
 require 'kconv'
 $KCODE = 'utf-8'
+
+# 使っている情報は今4つ
+# @screen_name
+# @text
+# @lang
+# @time_zone
+
+# examlang で言語判定
+# タイムゾーンと、ひらがなのあるなし
+
+# examprice で値段判定
+# 単語4つの値段を足したり掛けたりして合計金額まで出す
+
+# gendialog で台詞決定
+## Special Message
+### DBがないと動けないもの
+
+## Gourmet Message
+### 食べもの、飲み物、寒い
+
+## Seasonal Message
+### あけおめ、めりくり、たなばた
+
+## Neta Message
+
+## Text Message
+### 普通の東のエデンの反応
+
+## Greetings Message
+### ありがとう、おめでとう
+
+## Normal Message
+### 値段がない、ワードがない、100万こえたなど
+
+## Character Message
+### タチコマ、7番、2番、10番
 
 class Juizdialog
     # 計算に入れる単語の数
@@ -57,9 +94,9 @@ class Juizdialog
             # TODO after db
         elsif @text.match(/(今日|本日|きょう)の最低金額/) then
             # TODO after db
-        elsif @text.match(/残(金|額|高|りの金額).*(いくら|教えて|わかる)/) then
+        elsif @text.match(/残(金|額|高|りの金額).*(いくら|教えて|わかる|は？)/) then
             # TODO after db
-        elsif @text.match(/(と|って|て)(言って|諭して)/) then
+        elsif @text.match(/(と|って|て)(言って|諭して)[^た]/) then
             # TODO
         elsif @text.match(/(明日|あした|今月|本日|今日)の予定は(？|\?)/) then
             # TODO
@@ -335,15 +372,15 @@ class Juizdialog
         if @text.match(/^[0-9a-zA-Z !"#\$%&'()*+-.\/:;<=>?@\[\\\]^_`{\|}~]+$/) && !@text.match(/merry.*mas/i) then
             @lang = 'us'
             @orig_text = @text
-            @text = Translate.t(@text, Language::ENGLISH, Language::JAPANESE)
+            @text = EasyTranslate.translate(@text, :to => :ja)
         elsif (@time_zone == 'Beijing' || @time_zone == 'Hong Kong' || @time_zone == 'Chongqing' || @time_zone == 'Taipei') && !@text.match(/[ぁ-ん]/) then
             @lang = 'cn'
             @orig_text = @text
-            @text = Translate.t(@text, Language::CHINESE, Language::JAPANESE)
+            @text = EasyTranslate.translate(@text, :to => :ja)
         elsif @time_zone == 'Seoul' && !@text.match(/[ぁ-ん]/) then
             @lang = 'ko'
             @orig_text = @text
-            @text = Translate.t(@text, Language::KOREAN, Language::JAPANESE)
+            @text = EasyTranslate.translate(@text, :to => :ja)
         end
     end
 
@@ -362,6 +399,7 @@ class Juizdialog
                 next
             end
             pricebox = get_kakaku(word)
+# debug
 puts pricebox
             price = pricebox['price']
             if price != nil && price > 0 then
