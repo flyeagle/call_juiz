@@ -76,6 +76,9 @@ class Juizdialog
     def gettwit
         @twit
     end
+    def getmoney
+        @money
+    end
 
     def dialog
         @jms.setinfo(@screen_name, @text)
@@ -329,7 +332,7 @@ class Juizdialog
             @showtext = false
             @showmoney = false
             @juiz_suffix = @jms.longtext
-        elsif @money > 1000000000000 then
+        elsif @money > 10000000000 then
             @juiz_suffix = @jms.overmoney
         elsif @money > 10000000 then
             if @juiz_suffix == '' then
@@ -362,6 +365,10 @@ class Juizdialog
             @showtext = false
             @showmoney = false
             @juiz_suffix = @jms.no10
+        end
+
+        if !@showmoney then
+            @money = 0
         end
 
         @jms.setmoney(@money)
@@ -471,7 +478,7 @@ puts pricebox
         end
         # もしジュイス宛ではなかったらfalse
         if !text.match(/^(\.@|@|＠)(flyeagle_echo|call_juiz|ジュイス)( |　|、|,|)/) then
-            return nil
+            return '' 
         end
         text = text.sub(/^(\.@|@|＠)(flyeagle_echo|call_juiz|ジュイス)( |　|、|,|)/, '')
         text = text.sub(/^[\s　]+/, '')
