@@ -61,22 +61,52 @@ class CallJuiz
             begin
                 connect do |json|
                     if json['text'] then
-                        # ジュイス宛ではなかったら無視
-                        juiz_dialog = Juizdialog.new(json)
-                        if juiz_dialog.gettext == nil then
+                        # 自分が発したものは除外
+                        user = json['user']
+                        if user['screen_name'] == 'flyeagle_echo' || 
+                            user['screen_name'] == 'call_juiz' then
                             next
                         end
 
-# debug
-user = json['user']
-puts "#{user['screen_name']}: #{CGI.unescapeHTML(json['text'])}"
+                        # ジュイス宛ではなかったら無視
+                        juiz_dialog = Juizdialog.new(json)
+                        if juiz_dialog.gettext == '' then
+                            next
+                        end
+
+                        # bot の限界を超えてたら無視
+#                        if is_bots_twittering?(user['screen_name']) then
+#                            next
+#                        end
 
                         # 解析開始
                         juiz_dialog.dialog
 
-# debug
-puts juiz_dialog.gettwit
+                        # つぶやき作成
+                        twit = juiz_dialog.gettwit
 
+# debug
+if user['screen_name'] == 'sabottery' then
+# debug
+puts "#{user['screen_name']}: #{CGI.unescapeHTML(json['text'])}"
+
+# debug
+puts twit
+
+                        # つぶやき、金額をDBへ記録
+                        setdb(json, juiz_dialog.getmoney, 0)
+
+                        # TODO:100億以上も今はDBにつっこんでいる
+                        # TODO:定期ツイートを作らないと
+                        # TODO:abuserはその際に抜く？setdbしないのもあり
+
+                        # 返信する
+                        # sleep 10
+                        @access_token.post('/statuses/update.json',
+                            'status' => twit
+                        )
+#debug
+end
                     end
                 end
             #rescue Timeout::Error, StandardError # 接続エラー
@@ -86,16 +116,35 @@ puts juiz_dialog.gettwit
         end
     end
 
-    def setdb(id, screen_name, text, text_id, price, timestamp, protectedflg)
-@juizline.id = user['id_str']
-@juizline.screen_name = user['screen_name']
-@juizline.text = json['text']
-@juizline.text_id = json['id_str']
-@juizline.price = 100
-@juizline.created_at = Time.parse(json['created_at'].to_s).to_i
-@juizline.protected = json['protected'] ? 1 : 0
-@juizline.save
-@juizline = Juizline.new
+    def setdb(json, price, error)
+        user = json['user']
+        @juizline.id = user['id_str']
+        @juizline.screen_name = user['screen_name']
+        @juizline.protected = user['protected'] ? 1 : 0
+        @juizline.text = json['text']
+        @juizline.text_id = json['id_str']
+        @juizline.created_at = Time.parse(json['created_at'].to_s).to_i
+        @juizline.price = price
+        @juizline.save
+        @juizline = Juizline.new
+    end
+
+    def is_bots_twittering?(screen_name)
+        rows = Juizline.find(:all, :order => "created_at DESC", :limit => 20)
+
+        count = 0
+        rows.each do |t|
+            if t.screen_name == screen_name then
+                count += 1
+            end
+        end
+
+        # 最新20件の受理の中で5件以上存在すればtrue
+        if count > 4 then
+            return true
+        else
+            return false
+        end
     end
 
     # Stream API を呼び出す
@@ -144,7 +193,6 @@ puts juiz_dialog.gettwit
             end
         end
     end
-
 end
 
 if $0 == __FILE__ then
