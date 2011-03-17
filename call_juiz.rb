@@ -17,7 +17,8 @@ $KCODE = 'utf-8'
 
 class CallJuiz
     # bot の screen_name
-    SCREEN_NAME = 'call_juiz'
+    #SCREEN_NAME = 'call_juiz'
+    SCREEN_NAME = 'flyeagle_echo'
 
     # bot の user_agent
     BOT_USER_AGENT = 'call_juiz auto reply program 1.0 by @flyeagle'
@@ -28,8 +29,7 @@ class CallJuiz
     def initialize
         path = '/home/flyeagle/call_juiz/'
         yaml = YAML::load_file(path+'accesskey.yaml')
-        accesskey = yaml['call_juiz']
-        accesskey = yaml['flyeagle_echo']
+        accesskey = yaml[SCREEN_NAME]
 
         # Twitter Setting
         @consumer = OAuth::Consumer.new(
@@ -54,6 +54,9 @@ class CallJuiz
             :database => mysqlkey['database']
         )
         @juizline = Juizline.new
+
+        # abuser
+        @abuser = yaml['abuser']
     end
 
     def run
@@ -63,8 +66,7 @@ class CallJuiz
                     if json['text'] then
                         # 自分が発したものは除外
                         user = json['user']
-                        if user['screen_name'] == 'flyeagle_echo' || 
-                            user['screen_name'] == 'call_juiz' then
+                        if user['screen_name'] == SCREEN_NAME then
                             next
                         end
 
@@ -93,12 +95,18 @@ puts "#{user['screen_name']}: #{CGI.unescapeHTML(json['text'])}"
 # debug
 puts twit
 
-                        # つぶやき、金額をDBへ記録
-                        setdb(json, juiz_dialog.getmoney, 0)
+                        # 0 < 金額 <= 100億の場合のみDBへ
+                        if juiz_dialog.getmoney > 0 &&
+                            juiz_dialog.getmoney <= 10000000000 then
 
-                        # TODO:100億以上も今はDBにつっこんでいる
-                        # TODO:定期ツイートを作らないと
-                        # TODO:abuserはその際に抜く？setdbしないのもあり
+                            # abuser じゃない場合のみDBへ
+                            # TODO:abuserを追加した際の再起動方法
+                            if @abuser.index(user['screen_name']) == nil then
+
+                                # つぶやき、金額をDBへ記録
+                                setdb(json, juiz_dialog.getmoney, 0)
+                            end
+                        end
 
                         # 返信する
                         # sleep 10
