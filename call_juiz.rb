@@ -104,7 +104,7 @@ puts twit
                             if @abuser.index(user['screen_name']) == nil then
 
                                 # つぶやき、金額をDBへ記録
-                                setdb(json, juiz_dialog.getmoney, 0)
+                                setdb(json, juiz_dialog.gettext, juiz_dialog.getmoney, 0)
                             end
                         end
 
@@ -124,12 +124,12 @@ end
         end
     end
 
-    def setdb(json, price, error)
+    def setdb(json, text, price, error)
         user = json['user']
         @juizline.id = user['id_str']
         @juizline.screen_name = user['screen_name']
         @juizline.protected = user['protected'] ? 1 : 0
-        @juizline.text = json['text']
+        @juizline.text = text
         @juizline.text_id = json['id_str']
         @juizline.created_at = Time.parse(json['created_at'].to_s).to_i
         @juizline.price = price
