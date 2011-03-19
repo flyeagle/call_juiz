@@ -42,16 +42,32 @@ class CallJuizFollow
         friends = get_ids('friends')
         followers = get_ids('followers')
 
-pp followers - friends
-pp '#########'
-pp friends - followers
+        must_follow = followers - friends
+        must_remove = friends - followers
+
+pp must_follow.length.to_s
+pp must_remove.length.to_s
+
+        must_follow.each do |id|
+            @access_token.post('/friendships/create.json',
+                'user_id' => id
+            )
+pp "followed "+id.to_s
+            sleep 1
+        end
+
+        must_remove.each do |id|
+            @access_token.post('/friendships/destroy.json',
+                'user_id' => id
+            )
+pp "removed "+id.to_s
+            sleep 1
+        end
     end
 
     def get_ids(command = 'friends')
         ids = []
         cursor = -1
-#        cursor = 1340779775761996433
-#        cursor = 1320786128194662170
         count = 0
         until cursor == 0 || count > 7 do
             response = @access_token.get('http://api.twitter.com/1/'+command+'/ids.json?'+
