@@ -21,8 +21,8 @@ end
 
 class CallJuizRoutine
     # bot の screen_name
-    #SCREEN_NAME = 'call_juiz'
-    SCREEN_NAME = 'flyeagle_echo'
+    SCREEN_NAME = 'call_juiz'
+    #SCREEN_NAME = 'flyeagle_echo'
 
     # bot の user_agent
     BOT_USER_AGENT = 'call_juiz auto reply program 1.0 by @flyeagle'
