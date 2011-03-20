@@ -2,12 +2,13 @@ require 'rubygems'
 require 'net/https'
 require 'oauth'
 require 'json' if RUBY_VERSION < '1.9.0'
+require 'yaml'
 # for DB
 require 'active_record'
 class Juizline < ActiveRecord::Base
 end
 # for Juiz
-require 'juiz_dialog.rb'
+require '/home/flyeagle/call_juiz/juiz_dialog.rb'
 require 'kconv'
 $KCODE = 'utf-8'
 
@@ -15,16 +16,19 @@ $KCODE = 'utf-8'
 # mention に当たるもの、および返信文言については
 # Juizdialog に任せている
 
+# TODO:crowl_mention
+
+
 class CallJuiz
     # bot の screen_name
-    #SCREEN_NAME = 'call_juiz'
-    SCREEN_NAME = 'flyeagle_echo'
+    SCREEN_NAME = 'call_juiz'
+    #SCREEN_NAME = 'flyeagle_echo'
 
     # bot の user_agent
     BOT_USER_AGENT = 'call_juiz auto reply program 1.0 by @flyeagle'
 
     # SSL の証明書
-    HTTPS_CA_FILE_PATH = './twitter.cer'
+    HTTPS_CA_FILE_PATH = '/home/flyeagle/call_juiz/twitter.cer'
 
     def initialize
         path = '/home/flyeagle/call_juiz/'
@@ -44,19 +48,13 @@ class CallJuiz
         )
 
         # DB Setting
-        mysqlkey = yaml['mysql']
-        ActiveRecord::Base.establish_connection(
-            :adapter => 'mysql',
-            :encoding => 'utf8',
-            :host => mysqlkey['host'],
-            :username => mysqlkey['username'],
-            :password => mysqlkey['password'],
-            :database => mysqlkey['database']
-        )
-        @juizline = Juizline.new
+        @mysqlkey = yaml['mysql']
 
         # abuser
         @abuser = yaml['abuser']
+
+        # timer
+        @starttime = Time.now.to_i
     end
 
     def run
@@ -77,9 +75,9 @@ class CallJuiz
                         end
 
                         # bot の限界を超えてたら無視
-#                        if is_bots_twittering?(user['screen_name']) then
-#                            next
-#                        end
+                        if is_bots_twittering?(user['screen_name']) then
+                            next
+                        end
 
                         # 解析開始
                         juiz_dialog.dialog
@@ -88,7 +86,7 @@ class CallJuiz
                         twit = juiz_dialog.gettwit
 
 # debug
-if user['screen_name'] == 'sabottery' then
+#if user['screen_name'] == 'sabottery' then
 # debug
 puts "#{user['screen_name']}: #{CGI.unescapeHTML(json['text'])}"
 
@@ -110,11 +108,12 @@ puts twit
 
                         # 返信する
                         # sleep 10
-                        @access_token.post('/statuses/update.json',
-                            'status' => twit
-                        )
+#                        @access_token.post('/statuses/update.json',
+#                            'status' => twit
+#                        )
+
 #debug
-end
+#end
                     end
                 end
             #rescue Timeout::Error, StandardError # 接続エラー
@@ -125,19 +124,26 @@ end
     end
 
     def setdb(json, text, price, error)
+        connect_mysql()
+
         user = json['user']
-        @juizline.id = user['id_str']
-        @juizline.screen_name = user['screen_name']
-        @juizline.protected = user['protected'] ? 1 : 0
-        @juizline.text = text
-        @juizline.text_id = json['id_str']
-        @juizline.created_at = Time.parse(json['created_at'].to_s).to_i
-        @juizline.price = price
-        @juizline.save
-        @juizline = Juizline.new
+        juizline = Juizline.new
+
+        juizline.id = user['id_str']
+        juizline.screen_name = user['screen_name']
+        juizline.protected = user['protected'] ? 1 : 0
+        juizline.text = text
+        juizline.text_id = json['id_str']
+        juizline.created_at = Time.parse(json['created_at'].to_s).to_i
+        juizline.price = price
+        juizline.save
+
+        close_mysql()
     end
 
     def is_bots_twittering?(screen_name)
+        connect_mysql()
+
         rows = Juizline.find(:all, :order => "created_at DESC", :limit => 20)
 
         count = 0
@@ -153,6 +159,23 @@ end
         else
             return false
         end
+
+        close_mysql()
+    end
+
+    def connect_mysql
+        ActiveRecord::Base.establish_connection(
+            :adapter => 'mysql',
+            :encoding => 'utf8',
+            :host => @mysqlkey['host'],
+            :username => @mysqlkey['username'],
+            :password => @mysqlkey['password'],
+            :database => @mysqlkey['database']
+        )
+    end
+
+    def close_mysql
+        ActiveRecord::Base.remove_connection
     end
 
     # Stream API を呼び出す
@@ -196,6 +219,12 @@ end
                         end
 
                         yield status
+
+                        if Time.now.to_i % 20 == 0 then
+                            if (Time.now.to_i - @starttime > 4 * 60 * 60 - 19) then
+                                abort("started "+Time.at(@starttime).to_s+" ended "+Time.now.to_s)
+                            end
+                        end
                     end
                 end
             end
