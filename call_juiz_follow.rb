@@ -18,7 +18,7 @@ class CallJuizFollow
     BOT_USER_AGENT = 'call_juiz auto reply program 1.0 by @flyeagle'
 
     # SSL の証明書
-    HTTPS_CA_FILE_PATH = './twitter.cer'
+    HTTPS_CA_FILE_PATH = '/home/flyeagle/call_juiz/twitter.cer'
 
     def initialize
         path = '/home/flyeagle/call_juiz/'
@@ -45,24 +45,24 @@ class CallJuizFollow
         must_follow = followers - friends
         must_remove = friends - followers
 
-pp must_follow.length.to_s
-pp must_remove.length.to_s
+#pp must_follow.length.to_s
+#pp must_remove.length.to_s
 
         must_follow.each do |id|
             @access_token.post('/friendships/create.json',
                 'user_id' => id
             )
-pp "followed "+id.to_s
+#pp "followed "+id.to_s
             sleep 1
         end
 
-        must_remove.each do |id|
-            @access_token.post('/friendships/destroy.json',
-                'user_id' => id
-            )
-pp "removed "+id.to_s
-            sleep 1
-        end
+#        must_remove.each do |id|
+#            @access_token.post('/friendships/destroy.json',
+#                'user_id' => id
+#            )
+#pp "removed "+id.to_s
+#            sleep 1
+#        end
     end
 
     def get_ids(command = 'friends')
