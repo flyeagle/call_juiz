@@ -407,7 +407,7 @@ class Juizdialog
             end
             pricebox = get_kakaku(word)
 # debug
-puts pricebox
+#puts pricebox
             price = pricebox['price']
             if price != nil && price > 0 then
                 @url = pricebox['url']
