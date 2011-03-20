@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'easy_translate'
-require 'yahooapis.rb'
-require 'juiz_message.rb'
+require '/home/flyeagle/call_juiz/yahooapis.rb'
+require '/home/flyeagle/call_juiz/juiz_message.rb'
 require 'kconv'
 $KCODE = 'utf-8'
 
@@ -93,21 +93,21 @@ class Juizdialog
     def gendialog
         ## Special Message
         # TODO: 既に100億使い切っている人 after summation
-        if @text.match(/(今日|本日|きょう)の最高金額/) then
+#        if @text.match(/(今日|本日|きょう)の最高金額/) then
             # TODO after db
-        elsif @text.match(/(今日|本日|きょう)の最低金額/) then
+#        elsif @text.match(/(今日|本日|きょう)の最低金額/) then
             # TODO after db
-        elsif @text.match(/残(金|額|高|りの金額).*(いくら|教えて|わかる|は？)/) then
+#        elsif @text.match(/残(金|額|高|りの金額).*(いくら|教えて|わかる|は？)/) then
             # TODO after db
-        elsif @text.match(/(と|って|て)(言って|諭して)[^た]/) then
+#        elsif @text.match(/(と|って|て)(言って|諭して)[^た]/) then
             # TODO
-        elsif @text.match(/(明日|あした|今月|本日|今日)の予定は(？|\?)/) then
+#        elsif @text.match(/(明日|あした|今月|本日|今日)の予定は(？|\?)/) then
             # TODO
-        elsif @text.match(/教えて/) && !@text.match(/教えて(くれた|やって)/) then
+#        elsif @text.match(/教えて/) && !@text.match(/教えて(くれた|やって)/) then
             # TODO
 
         ## Gourmet Message
-        elsif (@text.match(/((なに|何)か).*(のみ|飲み)(もの|物).*(を|のみたい|飲みたい|ほしい|欲しい|ちょうだい|頂戴|お願い|おねがい)/) || @text.match(/(喉|のど).*(渇|乾|かわ)いた/)) then
+        if (@text.match(/((なに|何)か).*(のみ|飲み)(もの|物).*(を|のみたい|飲みたい|ほしい|欲しい|ちょうだい|頂戴|お願い|おねがい)/) || @text.match(/(喉|のど).*(渇|乾|かわ)いた/)) then
             drink = @jms.gourmet_drink
             if @text.match(/(冷|つめ)たい/) then
                 drink = @jms.gourmet_drink_cold
@@ -465,6 +465,8 @@ puts pricebox
     end
 
     def cleanup(text)
+        # 改行を取る
+        text = text.gsub(/[\r\n]/, '')
         # 最初にジュイスが出てくるか、文章になるまで回す
         ptext = ''
         while ptext != text
@@ -482,10 +484,11 @@ puts pricebox
         end
         text = text.sub(/^(\.@|@|＠)(flyeagle_echo|call_juiz|ジュイス)( |　|、|,|)/, '')
         text = text.sub(/^[\s　]+/, '')
-        text = text.sub(/[\s　]+$/, '')
         # フッタ処理
         text = text.sub(/\[.+\]$/, '')
         text = text.sub(/\*.+\*$/, '')
+        # 文末空白処理
+        text = text.sub(/[\s　]+$/, '')
         # RT処理
         text = text.gsub(/RT @/, 'RT @ ')
         # URL処理
