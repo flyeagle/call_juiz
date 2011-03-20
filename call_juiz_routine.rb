@@ -69,24 +69,26 @@ class CallJuizRoutine
         islow = @routine['islow'][hour]
         range = @routine['range'][hour]
 
-        rows = select_range(range)
-        twit = ''
+        if greeting != '' then
+            rows = select_range(range)
+            twit = ''
 
-        # 期間中に申請がない場合
-        if rows.length == 0 then
-            twit = noapply(greeting, range)
-        # 0時バージョン
-        elsif hour == 0 then
-            twit = midnight(rows, greeting)
-        # 通常バージョン
-        else
-            twit = hourtwit(rows, greeting, range, islow)
+            # 期間中に申請がない場合
+            if rows.length == 0 then
+                twit = noapply(greeting, range)
+            # 0時バージョン
+            elsif hour == 0 then
+                twit = midnight(rows, greeting)
+            # 通常バージョン
+            else
+                twit = hourtwit(rows, greeting, range, islow)
+            end
+
+            # さて、つぶやきますよ
+            @access_token.post('/statuses/update.json',
+                'status' => twit
+            )
         end
-
-        # さて、つぶやきますよ
-        @access_token.post('/statuses/update.json',
-            'status' => twit
-        )
     end
 
     def noapply(greeting, range)
