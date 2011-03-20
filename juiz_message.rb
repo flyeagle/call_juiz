@@ -203,7 +203,7 @@ class Juizmessage
         if message != nil then
             twit += message+' '
         end
-        if showmoney then
+        if showmoney && @money > 0 then
             if @lang == 'us' then
                 twit += '[Price:$'+money_format(@money/85)+']'
             elsif @lang == 'cn' then
