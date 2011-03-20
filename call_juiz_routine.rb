@@ -28,7 +28,7 @@ class CallJuizRoutine
     BOT_USER_AGENT = 'call_juiz auto reply program 1.0 by @flyeagle'
 
     # SSL の証明書
-    HTTPS_CA_FILE_PATH = './twitter.cer'
+    HTTPS_CA_FILE_PATH = '/home/flyeagle/call_juiz/twitter.cer'
 
     def initialize
         path = '/home/flyeagle/call_juiz/'
