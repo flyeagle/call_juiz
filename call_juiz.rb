@@ -107,10 +107,10 @@ puts twit
                         end
 
                         # 返信する
-                        # sleep 10
-#                        @access_token.post('/statuses/update.json',
-#                            'status' => twit
-#                        )
+                        sleep 10
+                        @access_token.post('/statuses/update.json',
+                            'status' => twit
+                        )
 
 #debug
 #end
@@ -220,9 +220,13 @@ puts twit
 
                         yield status
 
+                        # 20秒に1回のセルフチェック
                         if Time.now.to_i % 20 == 0 then
                             if (Time.now.to_i - @starttime > 4 * 60 * 60 - 19) then
                                 abort("started "+Time.at(@starttime).to_s+" ended "+Time.now.to_s)
+                            end
+                            if File.exist?('/home/flyeagle/call_juiz/abort') then
+                                abort("aborted by file: started "+Time.at(@starttime).to_s+" ended "+Time.now.to_s)
                             end
                         end
                     end
