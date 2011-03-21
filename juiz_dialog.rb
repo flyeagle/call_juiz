@@ -99,15 +99,27 @@ class Juizdialog
             # TODO after db
 #        elsif @text.match(/残(金|額|高|りの金額).*(いくら|教えて|わかる|は？)/) then
             # TODO after db
-#        elsif @text.match(/(と|って|て)(言って|諭して)[^た]/) then
-            # TODO
 #        elsif @text.match(/(明日|あした|今月|本日|今日)の予定は(？|\?)/) then
             # TODO
 #        elsif @text.match(/教えて/) && !@text.match(/教えて(くれた|やって)/) then
             # TODO
+        if @text.match(/(と|って|て)(言って|諭して)[^た]/) then
+            tmp = @text.sub(/^.*(「|『)(.+)(』|」)(と|って|て)(言って|諭して).*/, '\2')
+            if tmp == @text then
+                tmp = @text.sub(/^.*(、|。|・)(.+)(と|って|て)(言って|諭して).*/, '\2')
+                if tmp != @text then
+                    @showtext = false
+                    @juiz_suffix = '「'+tmp+'」…これでよろしいでしょうか？'
+                    @money = 1000
+                end
+            else
+                @showtext = false
+                @juiz_suffix = '「'+tmp+'」…これでよろしいでしょうか？'
+                @money = 1000
+            end
 
         ## Gourmet Message
-        if (@text.match(/((なに|何)か).*(のみ|飲み)(もの|物).*(を|のみたい|飲みたい|ほしい|欲しい|ちょうだい|頂戴|お願い|おねがい)/) || @text.match(/(喉|のど).*(渇|乾|かわ)いた/)) then
+        elsif (@text.match(/((なに|何)か).*(のみ|飲み)(もの|物).*(を|のみたい|飲みたい|ほしい|欲しい|ちょうだい|頂戴|お願い|おねがい)/) || @text.match(/(喉|のど).*(渇|乾|かわ)いた/)) then
             drink = @jms.gourmet_drink
             if @text.match(/(冷|つめ)たい/) then
                 drink = @jms.gourmet_drink_cold
