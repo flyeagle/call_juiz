@@ -88,10 +88,10 @@ class CallJuiz
 # debug
 #if user['screen_name'] == 'sabottery' then
 # debug
-puts "#{user['screen_name']}: #{CGI.unescapeHTML(json['text'])}"
+#puts "#{user['screen_name']}: #{CGI.unescapeHTML(json['text'])}"
 
 # debug
-puts twit
+#puts twit
 
                         # 0 < 金額 <= 100億の場合のみDBへ
                         if juiz_dialog.getmoney > 0 &&
@@ -109,7 +109,8 @@ puts twit
                         # 返信する
                         sleep 10
                         @access_token.post('/statuses/update.json',
-                            'status' => twit
+                            'status' => twit,
+                            'in_reply_to_status_id' => json['id']
                         )
 
 #debug
@@ -222,7 +223,7 @@ puts twit
 
                         # 20秒に1回のセルフチェック
                         if Time.now.to_i % 20 == 0 then
-                            if (Time.now.to_i - @starttime > 4 * 60 * 60 - 19) then
+                            if (Time.now.to_i - @starttime > 1 * 60 * 60 - 19) then
                                 abort("started "+Time.at(@starttime).to_s+" ended "+Time.now.to_s)
                             end
                             if File.exist?('/home/flyeagle/call_juiz/abort') then
