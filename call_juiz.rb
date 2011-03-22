@@ -154,14 +154,14 @@ class CallJuiz
             end
         end
 
+        close_mysql()
+
         # 最新20件の受理の中で5件以上存在すればtrue
         if count > 4 then
             return true
         else
             return false
         end
-
-        close_mysql()
     end
 
     def connect_mysql
