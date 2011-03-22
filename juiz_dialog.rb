@@ -182,7 +182,7 @@ class Juizdialog
         elsif @text.match(/(眠|ねむ)い/) then
             @money = 1100
             @juiz_suffix = @jms.feel_sleepy
-        elsif @text.match(/単位.*く(れ|だ)/) && Kernel.random(10) > 5 then
+        elsif @text.match(/単位.*く(れ|だ)/) && Kernel.rand(10) > 5 then
             @showmoney = false
             @juiz_suffix = 'さぁ。セレソンに単位を授与する基準をジュイスは聞かされておりませんので。'
         elsif @text.match(/内定.*く(れ|だ)/) then
