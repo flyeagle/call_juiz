@@ -13,7 +13,7 @@ require 'kconv'
 $KCODE = 'utf-8'
 
 # 単にOAuth接続して、UserStreamを拾っているだけ
-# mention に当たるもの、および返信文言については
+# mention に当たるもの、および返信文言の処理は
 # Juizdialog に任せている
 
 # TODO:crowl_mention
@@ -93,17 +93,19 @@ class CallJuiz
 # debug
 #puts twit
 
-                        # 0 < 金額 <= 100億の場合のみDBへ
-                        if juiz_dialog.getmoney > 0 &&
+                        # 0 <= 金額 <= 100億の場合のみDBへ
+                        # routine のほうで0円は無視する
+                        if 0 <= juiz_dialog.getmoney &&
                             juiz_dialog.getmoney <= 10000000000 then
 
-                            # abuser じゃない場合のみDBへ
+                            # abuser だった場合、protected を true に
                             # TODO:abuserを追加した際の再起動方法
-                            if @abuser.index(user['screen_name']) == nil then
-
-                                # つぶやき、金額をDBへ記録
-                                setdb(json, juiz_dialog.gettext, juiz_dialog.getmoney, 0)
+                            if @abuser.index(user['screen_name']) != nil then
+                                json['user']['protected'] = true
                             end
+
+                            # つぶやき、金額をDBへ記録
+                            setdb(json, juiz_dialog.gettext, juiz_dialog.getmoney, 0)
                         end
 
                         # 返信する
