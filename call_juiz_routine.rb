@@ -154,7 +154,7 @@ class CallJuizRoutine
         stime = now - range * 3600
 
         rows = Juizline.find(:all, :conditions => [
-            "created_at >= :stime AND created_at < :etime AND protected = 0",
+            "created_at >= :stime AND created_at < :etime AND protected = 0 AND price > 0",
             {:stime => stime, :etime => now}
         ], :order => "price ASC")
 
