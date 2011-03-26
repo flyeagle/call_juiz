@@ -22,6 +22,7 @@ class Yahooapis
         return xml
     end
 
+    # 現在使われておりません
     def chiebukuro(query)
         api_url  = 'http://chiebukuro.yahooapis.jp/Chiebukuro/V1/questionSearch?'
         api_url += 'appid='+@appid
@@ -66,6 +67,27 @@ class Yahooapis
         f.close
 
         return xml
+    end
+
+    def shorten_url(long_url)
+        api_url  = 'http://api.bit.ly/shorten?'
+        api_url += 'longUrl='+long_url
+        api_url += '&login=flyeagle'
+        api_url += '&apiKey=R_79b5ab47d6180cdcb141cc1318167041'
+        api_url += '&version=2.0.1'
+
+        enc_uri = URI.encode(api_url)
+        f = open(enc_uri)
+        json = f.read
+        f.close
+
+        result = JSON.parse(json)
+        result['results'].each_pair {|key, value|
+            if key == long_url then
+                return value['shortUrl']
+            end
+        }
+        return long_url
     end
 
     def keyphrase(text)
