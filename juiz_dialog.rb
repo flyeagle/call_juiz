@@ -5,6 +5,14 @@ require '/home/flyeagle/call_juiz/juiz_message.rb'
 require 'kconv'
 $KCODE = 'utf-8'
 
+if RUBY_VERSION < '1.9.0'
+    class Array
+        def choice
+            at(Kernel.rand(size))
+        end
+    end
+end
+
 # 使っている情報は今4つ
 # @screen_name
 # @text
@@ -101,7 +109,7 @@ class Juizdialog
             # TODO after db
 #        elsif @text.match(/(明日|あした|今月|本日|今日)の予定は(？|\?)/) then
             # TODO
-        if @text.match(/(教えて|調べて)/) && !@text.match(/(教えて|調べて)(くれた|やって)/) then
+        if @text.match(/(教えて|調べて|知りたい)/) && !@text.match(/(教えて|調べて)(くれた|やって)/) then
             url = oshiete(@text)
             if url != '' then
                 @juiz_suffix = '調査しました。あなたがこれからも探究心あふれる救世主たらんことを。 '+@ydn.shorten_url(url)+' '
@@ -449,7 +457,7 @@ class Juizdialog
 
     def oshiete(text)
         ext = text.sub(/^(juiz|ジュイス|じゅいす)( |　|、|,|)/i, '')
-        ext = ext.sub(/(を|について|)(教えて|調べて).*/, '')
+        ext = ext.sub(/(を|が|について|)(教えて|調べて|知りたい).*/, '')
 
         xml = @ydn.websearch(ext, '1', 'chie')
         w = WebSearch.new
@@ -459,7 +467,8 @@ class Juizdialog
             return ''
         end
 
-        return w.list[0]['url']
+        c = w.list.choice
+        return c['url']
     end
 
     def get_kakaku(word)
