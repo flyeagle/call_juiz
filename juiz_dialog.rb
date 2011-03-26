@@ -101,9 +101,15 @@ class Juizdialog
             # TODO after db
 #        elsif @text.match(/(明日|あした|今月|本日|今日)の予定は(？|\?)/) then
             # TODO
-#        elsif @text.match(/教えて/) && !@text.match(/教えて(くれた|やって)/) then
-            # TODO
-        if @text.match(/(と|って|て)(言って|諭して)[^た]/) then
+        if @text.match(/(教えて|調べて)/) && !@text.match(/(教えて|調べて)(くれた|やって)/) then
+            url = oshiete(@text)
+            if url != '' then
+                @juiz_suffix = '調査しました。あなたがこれからも探究心あふれる救世主たらんことを。 '+@ydn.shorten_url(url)+' '
+            end
+            if @money == 0 then
+                @money = 10410
+            end
+        elsif @text.match(/(と|って|て)(言って|諭して)[^た]/) then
             tmp = @text.sub(/^.*(「|『)(.+)(』|」)(と|って|て)(言って|諭して).*/, '\2')
             if tmp == @text then
                 tmp = @text.sub(/^.*(、|。|・)(.+)(と|って|て)(言って|諭して).*/, '\2')
@@ -355,7 +361,7 @@ class Juizdialog
             @showmoney = false
             @juiz_suffix = @jms.zeromoney
         elsif @words.length == 1 && @url != '' && (wantto = @jms.wantto(@text)) != '' then
-            @juiz_suffix = wantto+' '+@url
+            @juiz_suffix = wantto+' '+@ydn.shorten_url(@url)+' '
         else
             @juiz_suffix = @jms.receive+@jms.messia
         end
@@ -439,6 +445,21 @@ class Juizdialog
                 @money += price
             end
         end
+    end
+
+    def oshiete(text)
+        ext = text.sub(/^(juiz|ジュイス|じゅいす)( |　|、|,|)/i, '')
+        ext = ext.sub(/(を|について|)(教えて|調べて).*/, '')
+
+        xml = @ydn.websearch(ext, '1', 'chie')
+        w = WebSearch.new
+        w.parse(xml)
+
+        if w.list.length < 1 then
+            return ''
+        end
+
+        return w.list[0]['url']
     end
 
     def get_kakaku(word)
