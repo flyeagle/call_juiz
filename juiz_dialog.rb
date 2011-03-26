@@ -482,7 +482,7 @@ class Juizdialog
         # 最初にジュイスが出てくるか、文章になるまで回す
         ptext = ''
         while ptext != text
-            if text.match(/^(\.@|@|＠)(flyeagle_echo|call_juiz|ジュイス)/) then
+            if text.match(/^(\.@|@|＠)(flyeagle_echo|call_juiz|ジュイス)/i) then
                 break
             end
             ptext = text
@@ -491,10 +491,10 @@ class Juizdialog
             text = text.sub(/^[\s　\.]+/, '')
         end
         # もしジュイス宛ではなかったらfalse
-        if !text.match(/^(\.@|@|＠)(flyeagle_echo|call_juiz|ジュイス)( |　|、|,|)/) then
+        if !text.match(/^(\.@|@|＠)(flyeagle_echo|call_juiz|ジュイス)( |　|、|,|)/i) then
             return '' 
         end
-        text = text.sub(/^(\.@|@|＠)(flyeagle_echo|call_juiz|ジュイス)( |　|、|,|)/, '')
+        text = text.sub(/^(\.@|@|＠)(flyeagle_echo|call_juiz|ジュイス)( |　|、|,|)/i, '')
         text = text.sub(/^[\s　]+/, '')
         # フッタ処理
         text = text.sub(/\[.+\]$/, '')
