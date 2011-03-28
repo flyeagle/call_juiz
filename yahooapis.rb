@@ -110,6 +110,9 @@ class Yahooapis
         }
         ret = []
         obj.each {|keyphrase|
+            if keyphrase[0] == 'Error' then
+                next
+            end
             ret.push(keyphrase[0])
         }
         return ret
