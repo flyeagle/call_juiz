@@ -22,7 +22,6 @@ end
 class CallJuizRoutine
     # bot の screen_name
     SCREEN_NAME = 'call_juiz'
-    #SCREEN_NAME = 'flyeagle_echo'
 
     # bot の user_agent
     BOT_USER_AGENT = 'call_juiz auto reply program 1.0 by @flyeagle'
@@ -94,8 +93,7 @@ class CallJuizRoutine
     def noapply(greeting, range)
         twit  = greeting
         twit += "最近の"+range.to_s+"時間で一番……"
-        twit += "えっ！申請が1つもない……あの、私、何か不手際でも……？"
-        twit += "み、みなさまの申請をお待ちしております。"
+        twit += @routine['noapply'].choice()
 
         return twit
     end
