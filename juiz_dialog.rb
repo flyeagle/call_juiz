@@ -113,6 +113,8 @@ class Juizdialog
             url = oshiete(@text)
             if url != '' then
                 @juiz_suffix = '調査しました。あなたがこれからも探究心あふれる救世主たらんことを。 '+@ydn.shorten_url(url)+' '
+            else
+                @juiz_suffix = @jms.receive+@jms.messia
             end
             if @money == 0 then
                 @money = 10410
@@ -428,7 +430,7 @@ class Juizdialog
             if word.match(/[ !"#\$%&'()*+-.\/:;<=>?@\[\\\]^_`{\|}~]/) then
                 next
             end
-            if word == 'ジュイス' then
+            if word == 'ジュイス' || word == 'Error' then
                 next
             end
             pricebox = get_kakaku(word)
