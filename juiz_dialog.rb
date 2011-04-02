@@ -13,11 +13,13 @@ if RUBY_VERSION < '1.9.0'
     end
 end
 
-# 使っている情報は今4つ
+# 使っている情報は今5つ
 # @screen_name
 # @text
+# @orig_text
 # @lang
 # @time_zone
+# 外に出すテキストは @orig_text, 内部で使うのは @text
 
 # examlang で言語判定
 # タイムゾーンと、ひらがなのあるなし
@@ -63,7 +65,7 @@ class Juizdialog
         @text = cleanup(status['text'])
         @text_length = @text.split(//u).length
         @time_zone = status['user']['time_zone']
-        @orig_text = ''
+        @orig_text = @text
 
         # 途中生成物
         @lang = 'ja'
@@ -79,7 +81,7 @@ class Juizdialog
     end
 
     def gettext
-        @text
+        @orig_text
     end
     def gettwit
         @twit
@@ -89,8 +91,8 @@ class Juizdialog
     end
 
     def dialog
-        @jms.setinfo(@screen_name, @text)
         examlang()
+        @jms.setinfo(@screen_name, @orig_text)
         @jms.setlang(@lang, @time_zone)
 
         examprice()
