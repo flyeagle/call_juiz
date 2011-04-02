@@ -7,6 +7,7 @@ class Yahooapis
         path = '/home/flyeagle/call_juiz/'
         yaml = YAML::load_file(path+'accesskey.yaml')
         @appid = yaml['yahooapis']['appid']
+        @premium = yaml['yahooapis']['premium']
     end
 
     def daservice(sentence)
@@ -45,8 +46,8 @@ class Yahooapis
             return ret
         end
 
-        api_url  = 'http://search.yahooapis.jp/WebSearchService/V2/webSearch?'
-        api_url += 'appid='+@appid
+        api_url  = 'http://search.yahooapis.jp/PremiumWebSearchService/V1/webSearch?'
+        api_url += 'appid='+@premium
         api_url += '&query='+query
         if type == 'kakaku' then
             api_url += ' 円'
