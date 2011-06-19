@@ -56,7 +56,7 @@ class CallJuizMention
     # mention API を呼び出す
     def mention
         response = @access_token.get('http://api.twitter.com/1/statuses/mentions.json?count=200')
-        JSON.parse(response.body).each do |json|
+        JSON.parse(response.body).reverse.each do |json|
             if json['text'] then
                 # 1分以内の mention は除外
                 created_at = Time.parse(json['created_at'].to_s).to_i
@@ -112,8 +112,8 @@ class CallJuizMention
                     setdb(json, juiz_dialog.gettext, juiz_dialog.getmoney, 0)
                 end
 # debug
-puts "#{user['screen_name']}: #{CGI.unescapeHTML(json['text'])}"
-puts twit
+#puts "#{user['screen_name']}: #{CGI.unescapeHTML(json['text'])}"
+#puts twit
 
 
                 # 返信する
