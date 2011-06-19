@@ -61,6 +61,13 @@ class CallJuiz
         loop do
             begin
                 connect do |json|
+                    if json['event'] == 'follow' then
+                        if json['source']['screen_name'] != SCREEN_NAME then
+                            @access_token.post('/friendships/create.json',
+                                'user_id' => json['source']['id']
+                            )
+                        end
+                    end
                     if json['text'] then
                         # 自分が発したものは除外
                         user = json['user']
