@@ -68,6 +68,7 @@ class Juizdialog
         @orig_text = @text
 
         # 途中生成物
+        @spentmoney = 0
         @lang = 'ja'
         @words = []
         @money = 0
@@ -90,6 +91,10 @@ class Juizdialog
         @money
     end
 
+    def setspentmoney(money)
+        @spentmoney = money
+    end
+
     def dialog
         examlang()
         @jms.setinfo(@screen_name, @orig_text)
@@ -100,18 +105,35 @@ class Juizdialog
         gendialog()
     end
 
+    def money_format(num)
+        return (num.to_s =~ /[-+]?\d{4,}/) ? (num.to_s.reverse.gsub(/\G((?:\d+\.)?\d{3})(?=\d)/, '\1,').reverse) : num.to_s
+    end
+
     def gendialog
         ## Special Message
-        # TODO: 既に100億使い切っている人 after summation
-#        if @text.match(/(今日|本日|きょう)の最高金額/) then
+        # 既に100億使い切っている人
+        if @spentmoney > 10000000000 then
+            @showtext = false
+            @showmoney = false
+            @juiz_suffix = '様、貴方はすでに100億使い切りました。セレソンのルールを覚えておいでですか？…つまり、そういうことです。'
+#        elsif @text.match(/(今日|本日|きょう)の最高金額/) then
             # TODO after db
 #        elsif @text.match(/(今日|本日|きょう)の最低金額/) then
             # TODO after db
-#        elsif @text.match(/残(金|額|高|りの金額).*(いくら|教えて|わかる|は？)/) then
-            # TODO after db
+        elsif @text.match(/残(金|額|高|りの金額).*(いくら|教えて|わかる|は？)/) then
+            @showtext = false
+            @showmoney = false
+            last_money = 10000000000 - @spentmoney
+            @juiz_suffix = 'ご奉仕可能な残りの金額は'
+            if last_money > 0 then
+                @juiz_suffix += money_format(last_money)+'円となっております。'
+            else
+                @juiz_suffix += '実はもう1円も残っておりません・・。'
+            end
+
 #        elsif @text.match(/(明日|あした|今月|本日|今日)の予定は(？|\?)/) then
             # TODO
-        if @text.match(/(教えて|調べて|知りたい)/) && !@text.match(/(教えて|調べて)(くれた|やって)/) then
+        elsif @text.match(/(教えて|調べて|知りたい)/) && !@text.match(/(教えて|調べて)(くれた|やって)/) then
             url = oshiete(@text)
             if url != '' then
                 @juiz_suffix = '調査しました。あなたがこれからも探究心あふれる救世主たらんことを。 '+@ydn.shorten_url(url)+' '

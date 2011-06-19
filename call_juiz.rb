@@ -86,6 +86,9 @@ class CallJuiz
                             next
                         end
 
+                        # 今まで使ったお金の計算
+                        juiz_dialog.setspentmoney(total_spent_money(user['screen_name']))
+
                         # 解析開始
                         juiz_dialog.dialog
 
@@ -171,6 +174,19 @@ class CallJuiz
         else
             return false
         end
+    end
+
+    def total_spent_money(screen_name)
+        connect_mysql()
+
+        current = Time.now
+        first = Time.local(current.year, current.month, current.day, 0, 0, 0)
+
+        spent_money = Juizline.sum(:price, :conditions => "screen_name = '#{screen_name}' and created_at >= #{first.to_i}")
+
+        close_mysql()
+
+        return spent_money
     end
 
     def connect_mysql
