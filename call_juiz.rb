@@ -16,9 +16,6 @@ $KCODE = 'utf-8'
 # mention に当たるもの、および返信文言の処理は
 # Juizdialog に任せている
 
-# TODO:crowl_mention
-
-
 class CallJuiz
     # bot の screen_name
     SCREEN_NAME = 'call_juiz'
@@ -69,6 +66,12 @@ class CallJuiz
                         end
                     end
                     if json['text'] then
+                        # Time.local(2011, 8, 15, 6, 20, 11)
+                        # ジュイス停止
+                        if Time.now.to_i > 1313356811 then
+                            next
+                        end
+
                         # 自分が発したものは除外
                         user = json['user']
                         if user['screen_name'] == SCREEN_NAME then
