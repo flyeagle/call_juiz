@@ -83,10 +83,13 @@ class CallJuizRoutine
                 twit = hourtwit(rows, greeting, range, islow)
             end
 
-            # さて、つぶやきますよ
-            @access_token.post('/statuses/update.json',
-                'status' => twit
-            )
+            # Time.local(2011, 8, 15, 6, 20, 11)
+            if Time.now.to_i < 1313356811 then
+                # さて、つぶやきますよ
+                @access_token.post('/statuses/update.json',
+                    'status' => twit
+                )
+            end
         end
     end
 
