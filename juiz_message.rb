@@ -164,8 +164,12 @@ class Juizmessage
     def no2(text)
         if text.match(/聞きたい？/) then
             return '是非聞きたいわ！'
-        elsif text.match(/分かる.*ジュイス/) then
-            return 'ええ、分かるわ、2G。'
+        elsif text.match(/国家ぐるみで.*分かる/) then
+            return 'ええ、分かるわ2G。'
+        elsif text.match(/被害者最強/) then
+            return '素晴らしいわ、2G。わたしゾクゾクしちゃう。'
+        elsif text.match(/帰国早々/) then
+            return 'Yes, 2G。いつまでもカッティング・エッジーな救世主たらんことを。……ところで、どうやって彼にTシャツを？'
         else
             no2 = @character['no2']
             return no2.choice()
